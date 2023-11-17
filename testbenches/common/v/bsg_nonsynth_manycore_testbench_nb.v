@@ -966,24 +966,24 @@ end
 `ifndef VERILATOR_WORKAROUND_DISABLE_VCACHE_PROFILING
 if (enable_cache_profiling_p) begin
   
-  bind bsg_cache_nb vcache_nb_profiler #(
-    .word_width_p(data_width_p)
-    ,.addr_width_p(addr_width_p)
-    ,.block_size_in_words_p(block_size_in_words_p)
-    ,.header_print_p({`BSG_STRINGIFY(`HOST_MODULE_PATH),".testbench.fi1.DUT.py[0].podrow.px[0].pod.north_vc_x[0].north_vc_row.vc_y[0].vc_x[0].vc.cache.vcache_prof"})
-    ,.ways_p(ways_p)
-  ) vcache_prof (
-    // everything else
-    .*
-    ,.clk_i(clk_i)
-    // bsg_cache_nb_miss
-    ,.chosen_way_n(miss.chosen_way_n)
-    // from testbench
-    ,.global_ctr_i($root.`HOST_MODULE_PATH.global_ctr)
-    ,.print_stat_v_i($root.`HOST_MODULE_PATH.print_stat_v)
-    ,.print_stat_tag_i($root.`HOST_MODULE_PATH.print_stat_tag)
-    ,.trace_en_i($root.`HOST_MODULE_PATH.trace_en)
-  );
+  // bind bsg_cache_nb vcache_nb_profiler #(
+  //   .word_width_p(data_width_p)
+  //   ,.addr_width_p(addr_width_p)
+  //   ,.block_size_in_words_p(block_size_in_words_p)
+  //   ,.header_print_p({`BSG_STRINGIFY(`HOST_MODULE_PATH),".testbench.fi1.DUT.py[0].podrow.px[0].pod.north_vc_x[0].north_vc_row.vc_y[0].vc_x[0].vc.cache.vcache_prof"})
+  //   ,.ways_p(ways_p)
+  // ) vcache_prof (
+  //   // everything else
+  //   .*
+  //   ,.clk_i(clk_i)
+  //   // bsg_cache_nb_miss
+  //   ,.chosen_way_n(miss.chosen_way_n)
+  //   // from testbench
+  //   ,.global_ctr_i($root.`HOST_MODULE_PATH.global_ctr)
+  //   ,.print_stat_v_i($root.`HOST_MODULE_PATH.print_stat_v)
+  //   ,.print_stat_tag_i($root.`HOST_MODULE_PATH.print_stat_tag)
+  //   ,.trace_en_i($root.`HOST_MODULE_PATH.trace_en)
+  // );
   
   end
 `endif
