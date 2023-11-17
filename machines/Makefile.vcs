@@ -65,6 +65,9 @@ define set_vcs_machine_variables
 	$(eval VCS_DEFINES += +define+BSG_MACHINE_SUBARRAY_X="${BSG_MACHINE_SUBARRAY_X}")
 	$(eval VCS_DEFINES += +define+BSG_MACHINE_SUBARRAY_Y="${BSG_MACHINE_SUBARRAY_Y}")
 	$(eval VCS_DEFINES += +define+BSG_MACHINE_VCACHE_WORD_TRACKING="${BSG_MACHINE_VCACHE_WORD_TRACKING}")
+	$(eval VCS_DEFINES += +define+BSG_MACHINE_VCACHE_MSHR_ELS_P="${BSG_MACHINE_VCACHE_MSHR_ELS_P}")
+	$(eval VCS_DEFINES += +define+BSG_MACHINE_VCACHE_READ_MISS_ELS_PER_MSHR_P="${BSG_MACHINE_VCACHE_READ_MISS_ELS_PER_MSHR_P}")
+	$(eval VCS_DEFINES += +define+BSG_MACHINE_VCACHE_NON_BLOCKING_P="${BSG_MACHINE_VCACHE_NON_BLOCKING_P}")
 	# specify where the host module is instantiated for profiler trigger (print_stat).
 	# relative to $root
 	$(eval VCS_DEFINES += +define+HOST_MODULE_PATH=spmd_testbench) 

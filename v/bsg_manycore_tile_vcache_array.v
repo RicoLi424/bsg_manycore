@@ -36,6 +36,11 @@ module bsg_manycore_tile_vcache_array
     , `BSG_INV_PARAM(vcache_dma_data_width_p)
     , `BSG_INV_PARAM(vcache_word_tracking_p)
 
+    , `BSG_INV_PARAM(vcache_mshr_els_p)
+    , `BSG_INV_PARAM(vcache_read_miss_els_per_mshr_p)
+
+    , `BSG_INV_PARAM(vcache_non_blocking_p)
+
     , `BSG_INV_PARAM(wh_ruche_factor_p)
     , `BSG_INV_PARAM(wh_cid_width_p)
     , `BSG_INV_PARAM(wh_flit_width_p)
@@ -82,45 +87,90 @@ module bsg_manycore_tile_vcache_array
   // instantiate vcaches.
   for (genvar y = 0; y < num_vcache_rows_p; y++) begin: vc_y
     for (genvar x = 0; x < subarray_num_tiles_x_p; x++) begin: vc_x
-      bsg_manycore_tile_vcache #(
-        .addr_width_p(addr_width_p)
-        ,.data_width_p(data_width_p)
-        ,.x_cord_width_p(x_cord_width_p)
-        ,.y_cord_width_p(y_cord_width_p)
-        ,.num_tiles_y_p(num_tiles_y_p)  
-        ,.icache_block_size_in_words_p(icache_block_size_in_words_p)
-        ,.vcache_addr_width_p(vcache_addr_width_p)
-        ,.vcache_data_width_p(vcache_data_width_p)
-        ,.vcache_ways_p(vcache_ways_p)
-        ,.vcache_sets_p(vcache_sets_p)
-        ,.vcache_block_size_in_words_p(vcache_block_size_in_words_p)
-        ,.vcache_dma_data_width_p(vcache_dma_data_width_p)
-        ,.vcache_word_tracking_p(vcache_word_tracking_p)
+      if (vcache_non_blocking_p) begin: nb
+        bsg_manycore_tile_vcache_nb #(
+          .addr_width_p(addr_width_p)
+          ,.data_width_p(data_width_p)
+          ,.x_cord_width_p(x_cord_width_p)
+          ,.y_cord_width_p(y_cord_width_p)
+          ,.num_tiles_y_p(num_tiles_y_p)  
+          ,.icache_block_size_in_words_p(icache_block_size_in_words_p)
+          ,.vcache_addr_width_p(vcache_addr_width_p)
+          ,.vcache_data_width_p(vcache_data_width_p)
+          ,.vcache_ways_p(vcache_ways_p)
+          ,.vcache_sets_p(vcache_sets_p)
+          ,.vcache_block_size_in_words_p(vcache_block_size_in_words_p)
+          ,.vcache_dma_data_width_p(vcache_dma_data_width_p)
+          ,.vcache_word_tracking_p(vcache_word_tracking_p)
 
-        ,.wh_ruche_factor_p(wh_ruche_factor_p)
-        ,.wh_cid_width_p(wh_cid_width_p)
-        ,.wh_flit_width_p(wh_flit_width_p)
-        ,.wh_len_width_p(wh_len_width_p)
-        ,.wh_cord_width_p(wh_cord_width_p)
-      ) vc (
-        .clk_i(clk_i[x/(subarray_num_tiles_x_p/num_clk_ports_p)])
-        ,.reset_i(reset_li[y][x])
-        ,.reset_o(reset_lo[y][x])
+          ,.vcache_mshr_els_p(vcache_mshr_els_p)
+          ,.vcache_read_miss_els_per_mshr_p(vcache_read_miss_els_per_mshr_p)
 
-        ,.wh_link_sif_i(wh_link_sif_li[y][x])
-        ,.wh_link_sif_o(wh_link_sif_lo[y][x])
+          ,.wh_ruche_factor_p(wh_ruche_factor_p)
+          ,.wh_cid_width_p(wh_cid_width_p)
+          ,.wh_flit_width_p(wh_flit_width_p)
+          ,.wh_len_width_p(wh_len_width_p)
+          ,.wh_cord_width_p(wh_cord_width_p)
+        ) vcnb (
+          .clk_i(clk_i[x/(subarray_num_tiles_x_p/num_clk_ports_p)])
+          ,.reset_i(reset_li[y][x])
+          ,.reset_o(reset_lo[y][x])
 
-        ,.ver_link_sif_i(ver_link_sif_li[y][x])
-        ,.ver_link_sif_o(ver_link_sif_lo[y][x])
+          ,.wh_link_sif_i(wh_link_sif_li[y][x])
+          ,.wh_link_sif_o(wh_link_sif_lo[y][x])
 
-        ,.global_x_i(global_x_li[y][x])
-        ,.global_y_i(global_y_li[y][x])
+          ,.ver_link_sif_i(ver_link_sif_li[y][x])
+          ,.ver_link_sif_o(ver_link_sif_lo[y][x])
 
-        ,.global_x_o(global_x_lo[y][x])
-        ,.global_y_o(global_y_lo[y][x])
+          ,.global_x_i(global_x_li[y][x])
+          ,.global_y_i(global_y_li[y][x])
 
-      );
-    
+          ,.global_x_o(global_x_lo[y][x])
+          ,.global_y_o(global_y_lo[y][x])
+
+        );
+      end
+      else begin: blk
+        bsg_manycore_tile_vcache #(
+          .addr_width_p(addr_width_p)
+          ,.data_width_p(data_width_p)
+          ,.x_cord_width_p(x_cord_width_p)
+          ,.y_cord_width_p(y_cord_width_p)
+          ,.num_tiles_y_p(num_tiles_y_p)  
+          ,.icache_block_size_in_words_p(icache_block_size_in_words_p)
+          ,.vcache_addr_width_p(vcache_addr_width_p)
+          ,.vcache_data_width_p(vcache_data_width_p)
+          ,.vcache_ways_p(vcache_ways_p)
+          ,.vcache_sets_p(vcache_sets_p)
+          ,.vcache_block_size_in_words_p(vcache_block_size_in_words_p)
+          ,.vcache_dma_data_width_p(vcache_dma_data_width_p)
+          ,.vcache_word_tracking_p(vcache_word_tracking_p)
+
+          ,.wh_ruche_factor_p(wh_ruche_factor_p)
+          ,.wh_cid_width_p(wh_cid_width_p)
+          ,.wh_flit_width_p(wh_flit_width_p)
+          ,.wh_len_width_p(wh_len_width_p)
+          ,.wh_cord_width_p(wh_cord_width_p)
+        ) vc (
+          .clk_i(clk_i[x/(subarray_num_tiles_x_p/num_clk_ports_p)])
+          ,.reset_i(reset_li[y][x])
+          ,.reset_o(reset_lo[y][x])
+
+          ,.wh_link_sif_i(wh_link_sif_li[y][x])
+          ,.wh_link_sif_o(wh_link_sif_lo[y][x])
+
+          ,.ver_link_sif_i(ver_link_sif_li[y][x])
+          ,.ver_link_sif_o(ver_link_sif_lo[y][x])
+
+          ,.global_x_i(global_x_li[y][x])
+          ,.global_y_i(global_y_li[y][x])
+
+          ,.global_x_o(global_x_lo[y][x])
+          ,.global_y_o(global_y_lo[y][x])
+
+        );
+      end
+
       // connect north
       if (y == 0) begin
         assign reset_li[y][x] = reset_i[x];

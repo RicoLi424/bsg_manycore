@@ -47,6 +47,11 @@ module bsg_manycore_pod_ruche
     , `BSG_INV_PARAM(vcache_dma_data_width_p)
     , `BSG_INV_PARAM(vcache_word_tracking_p)
 
+    , `BSG_INV_PARAM(vcache_mshr_els_p)
+    , `BSG_INV_PARAM(vcache_read_miss_els_per_mshr_p)
+
+    , `BSG_INV_PARAM(vcache_non_blocking_p)
+
     , `BSG_INV_PARAM(ruche_factor_X_p)
     , `BSG_INV_PARAM(barrier_ruche_factor_X_p)
   
@@ -149,6 +154,10 @@ module bsg_manycore_pod_ruche
       ,.vcache_block_size_in_words_p(vcache_block_size_in_words_p)
       ,.vcache_dma_data_width_p(vcache_dma_data_width_p)
       ,.vcache_word_tracking_p(vcache_word_tracking_p)
+
+      ,.vcache_mshr_els_p(vcache_mshr_els_p)
+      ,.vcache_read_miss_els_per_mshr_p(vcache_read_miss_els_per_mshr_p)
+      ,.vcache_non_blocking_p(vcache_non_blocking_p)
 
       ,.wh_ruche_factor_p(wh_ruche_factor_p)
       ,.wh_cid_width_p(wh_cid_width_p)
@@ -416,6 +425,10 @@ module bsg_manycore_pod_ruche
       ,.vcache_block_size_in_words_p(vcache_block_size_in_words_p)
       ,.vcache_dma_data_width_p(vcache_dma_data_width_p)
       ,.vcache_word_tracking_p(vcache_word_tracking_p)
+
+      ,.vcache_mshr_els_p(vcache_mshr_els_p)
+      ,.vcache_read_miss_els_per_mshr_p(vcache_read_miss_els_per_mshr_p)
+      ,.vcache_non_blocking_p(vcache_non_blocking_p)
 
       ,.wh_ruche_factor_p(wh_ruche_factor_p)
       ,.wh_cid_width_p(wh_cid_width_p)

@@ -43,6 +43,10 @@ module spmd_testbench
   parameter num_vcaches_per_channel_p = `BSG_MACHINE_NUM_VCACHES_PER_CHANNEL;  
 
 
+  parameter vcache_mshr_els_p = `BSG_MACHINE_VCACHE_MSHR_ELS_P;
+  parameter vcache_read_miss_els_per_mshr_p = `BSG_MACHINE_VCACHE_READ_MISS_ELS_PER_MSHR_P;
+  parameter vcache_non_blocking_p = `BSG_MACHINE_VCACHE_NON_BLOCKING_P;
+
   parameter wh_flit_width_p = vcache_dma_data_width_p;
   parameter wh_ruche_factor_p = `BSG_MACHINE_WH_RUCHE_FACTOR;
   parameter wh_cid_width_p = `BSG_SAFE_CLOG2(2*wh_ruche_factor_p); // no concentration in this testbench; cid is ignored.
@@ -88,79 +92,160 @@ module spmd_testbench
   bsg_manycore_link_sif_s io_link_sif_li, io_link_sif_lo;
   logic tag_done_lo;
 
-  bsg_nonsynth_manycore_testbench #(
-    .num_pods_x_p(num_pods_x_p)
-    ,.num_pods_y_p(num_pods_y_p)
-    ,.num_tiles_x_p(num_tiles_x_p)
-    ,.num_tiles_y_p(num_tiles_y_p)
-    ,.x_cord_width_p(x_cord_width_p)
-    ,.y_cord_width_p(y_cord_width_p)
-    ,.pod_x_cord_width_p(pod_x_cord_width_p)
-    ,.pod_y_cord_width_p(pod_y_cord_width_p)
-    ,.addr_width_p(addr_width_p)
-    ,.data_width_p(data_width_p)
-    ,.dmem_size_p(dmem_size_p)
-    ,.icache_entries_p(icache_entries_p)
-    ,.icache_tag_width_p(icache_tag_width_p)
-    ,.icache_block_size_in_words_p(icache_block_size_in_words_p)
-    ,.ruche_factor_X_p(ruche_factor_X_p)
-    ,.barrier_ruche_factor_X_p(barrier_ruche_factor_X_p)
 
-    ,.num_subarray_x_p(num_subarray_x_p)
-    ,.num_subarray_y_p(num_subarray_y_p)
+  if (vcache_non_blocking_p) begin: nb
+    bsg_nonsynth_manycore_testbench_nb #(
+      .num_pods_x_p(num_pods_x_p)
+      ,.num_pods_y_p(num_pods_y_p)
+      ,.num_tiles_x_p(num_tiles_x_p)
+      ,.num_tiles_y_p(num_tiles_y_p)
+      ,.x_cord_width_p(x_cord_width_p)
+      ,.y_cord_width_p(y_cord_width_p)
+      ,.pod_x_cord_width_p(pod_x_cord_width_p)
+      ,.pod_y_cord_width_p(pod_y_cord_width_p)
+      ,.addr_width_p(addr_width_p)
+      ,.data_width_p(data_width_p)
+      ,.dmem_size_p(dmem_size_p)
+      ,.icache_entries_p(icache_entries_p)
+      ,.icache_tag_width_p(icache_tag_width_p)
+      ,.icache_block_size_in_words_p(icache_block_size_in_words_p)
+      ,.ruche_factor_X_p(ruche_factor_X_p)
+      ,.barrier_ruche_factor_X_p(barrier_ruche_factor_X_p)
 
-    ,.num_vcache_rows_p(num_vcache_rows_p)
-    ,.vcache_data_width_p(vcache_data_width_p)
-    ,.vcache_sets_p(vcache_sets_p)
-    ,.vcache_ways_p(vcache_ways_p)
-    ,.vcache_block_size_in_words_p(vcache_block_size_in_words_p)
-    ,.vcache_dma_data_width_p(vcache_dma_data_width_p)
-    ,.vcache_size_p(vcache_size_p)
-    ,.vcache_addr_width_p(vcache_addr_width_p)
-    ,.vcache_word_tracking_p(vcache_word_tracking_p)
-    ,.num_vcaches_per_channel_p(num_vcaches_per_channel_p)
+      ,.num_subarray_x_p(num_subarray_x_p)
+      ,.num_subarray_y_p(num_subarray_y_p)
 
-    ,.wh_flit_width_p(wh_flit_width_p)
-    ,.wh_ruche_factor_p(wh_ruche_factor_p)
-    ,.wh_cid_width_p(wh_cid_width_p)
-    ,.wh_len_width_p(wh_len_width_p)
-    ,.wh_cord_width_p(wh_cord_width_p)
+      ,.num_vcache_rows_p(num_vcache_rows_p)
+      ,.vcache_data_width_p(vcache_data_width_p)
+      ,.vcache_sets_p(vcache_sets_p)
+      ,.vcache_ways_p(vcache_ways_p)
+      ,.vcache_block_size_in_words_p(vcache_block_size_in_words_p)
+      ,.vcache_dma_data_width_p(vcache_dma_data_width_p)
+      ,.vcache_size_p(vcache_size_p)
+      ,.vcache_addr_width_p(vcache_addr_width_p)
+      ,.vcache_word_tracking_p(vcache_word_tracking_p)
+      ,.num_vcaches_per_channel_p(num_vcaches_per_channel_p)
 
-    ,.bsg_manycore_network_cfg_p(bsg_manycore_network_cfg_p)
-    ,.bsg_manycore_mem_cfg_p(bsg_manycore_mem_cfg_p)
-    ,.bsg_dram_size_p(bsg_dram_size_p)
+      ,.vcache_mshr_els_p(vcache_mshr_els_p)
+      ,.vcache_read_miss_els_per_mshr_p(vcache_read_miss_els_per_mshr_p)
 
-    ,.reset_depth_p(reset_depth_p)
+      ,.wh_flit_width_p(wh_flit_width_p)
+      ,.wh_ruche_factor_p(wh_ruche_factor_p)
+      ,.wh_cid_width_p(wh_cid_width_p)
+      ,.wh_len_width_p(wh_len_width_p)
+      ,.wh_cord_width_p(wh_cord_width_p)
 
-`ifdef BSG_ENABLE_PROFILING
-    ,.enable_vcore_profiling_p(1)
-    ,.enable_router_profiling_p(1)
-    ,.enable_cache_profiling_p(1)
-    ,.enable_remote_op_profiling_p(1)
-`endif
-`ifdef BSG_ENABLE_COVERAGE
-    ,.enable_vcore_pc_coverage_p(1)
-`endif
-`ifdef BSG_ENABLE_VANILLA_CORE_TRACE
-    ,.enable_vanilla_core_trace_p(1)
-`endif
-`ifdef BSG_ENABLE_PC_HISTOGRAM
-    ,.enable_vanilla_core_pc_histogram_p(1)
-`endif
-  // DR: If the instance name is changed, the bind statements in the
-  // file where this module is defined, and header strings in the
-  // profilers need to be changed as well.
-  ) testbench (
-    .clk_i(core_clk)
-    ,.reset_i(global_reset)
+      ,.bsg_manycore_network_cfg_p(bsg_manycore_network_cfg_p)
+      ,.bsg_manycore_mem_cfg_p(bsg_manycore_mem_cfg_p)
+      ,.bsg_dram_size_p(bsg_dram_size_p)
 
-    ,.dram_clk_i(dram_clk)
+      ,.reset_depth_p(reset_depth_p)
 
-    ,.io_link_sif_i(io_link_sif_li)
-    ,.io_link_sif_o(io_link_sif_lo)
+  `ifdef BSG_ENABLE_PROFILING
+      ,.enable_vcore_profiling_p(1)
+      ,.enable_router_profiling_p(1)
+      ,.enable_cache_profiling_p(1)
+      ,.enable_remote_op_profiling_p(1)
+  `endif
+  `ifdef BSG_ENABLE_COVERAGE
+      ,.enable_vcore_pc_coverage_p(1)
+  `endif
+  `ifdef BSG_ENABLE_VANILLA_CORE_TRACE
+      ,.enable_vanilla_core_trace_p(1)
+  `endif
+  `ifdef BSG_ENABLE_PC_HISTOGRAM
+      ,.enable_vanilla_core_pc_histogram_p(1)
+  `endif
+    // DR: If the instance name is changed, the bind statements in the
+    // file where this module is defined, and header strings in the
+    // profilers need to be changed as well.
+    ) testbench (
+      .clk_i(core_clk)
+      ,.reset_i(global_reset)
 
-    ,.tag_done_o(tag_done_lo)
-  );
+      ,.dram_clk_i(dram_clk)
+
+      ,.io_link_sif_i(io_link_sif_li)
+      ,.io_link_sif_o(io_link_sif_lo)
+
+      ,.tag_done_o(tag_done_lo)
+    );      
+  end
+  else begin: blk
+    bsg_nonsynth_manycore_testbench #(
+      .num_pods_x_p(num_pods_x_p)
+      ,.num_pods_y_p(num_pods_y_p)
+      ,.num_tiles_x_p(num_tiles_x_p)
+      ,.num_tiles_y_p(num_tiles_y_p)
+      ,.x_cord_width_p(x_cord_width_p)
+      ,.y_cord_width_p(y_cord_width_p)
+      ,.pod_x_cord_width_p(pod_x_cord_width_p)
+      ,.pod_y_cord_width_p(pod_y_cord_width_p)
+      ,.addr_width_p(addr_width_p)
+      ,.data_width_p(data_width_p)
+      ,.dmem_size_p(dmem_size_p)
+      ,.icache_entries_p(icache_entries_p)
+      ,.icache_tag_width_p(icache_tag_width_p)
+      ,.icache_block_size_in_words_p(icache_block_size_in_words_p)
+      ,.ruche_factor_X_p(ruche_factor_X_p)
+      ,.barrier_ruche_factor_X_p(barrier_ruche_factor_X_p)
+
+      ,.num_subarray_x_p(num_subarray_x_p)
+      ,.num_subarray_y_p(num_subarray_y_p)
+
+      ,.num_vcache_rows_p(num_vcache_rows_p)
+      ,.vcache_data_width_p(vcache_data_width_p)
+      ,.vcache_sets_p(vcache_sets_p)
+      ,.vcache_ways_p(vcache_ways_p)
+      ,.vcache_block_size_in_words_p(vcache_block_size_in_words_p)
+      ,.vcache_dma_data_width_p(vcache_dma_data_width_p)
+      ,.vcache_size_p(vcache_size_p)
+      ,.vcache_addr_width_p(vcache_addr_width_p)
+      ,.vcache_word_tracking_p(vcache_word_tracking_p)
+      ,.num_vcaches_per_channel_p(num_vcaches_per_channel_p)
+
+      ,.wh_flit_width_p(wh_flit_width_p)
+      ,.wh_ruche_factor_p(wh_ruche_factor_p)
+      ,.wh_cid_width_p(wh_cid_width_p)
+      ,.wh_len_width_p(wh_len_width_p)
+      ,.wh_cord_width_p(wh_cord_width_p)
+
+      ,.bsg_manycore_network_cfg_p(bsg_manycore_network_cfg_p)
+      ,.bsg_manycore_mem_cfg_p(bsg_manycore_mem_cfg_p)
+      ,.bsg_dram_size_p(bsg_dram_size_p)
+
+      ,.reset_depth_p(reset_depth_p)
+
+  `ifdef BSG_ENABLE_PROFILING
+      ,.enable_vcore_profiling_p(1)
+      ,.enable_router_profiling_p(1)
+      ,.enable_cache_profiling_p(1)
+      ,.enable_remote_op_profiling_p(1)
+  `endif
+  `ifdef BSG_ENABLE_COVERAGE
+      ,.enable_vcore_pc_coverage_p(1)
+  `endif
+  `ifdef BSG_ENABLE_VANILLA_CORE_TRACE
+      ,.enable_vanilla_core_trace_p(1)
+  `endif
+  `ifdef BSG_ENABLE_PC_HISTOGRAM
+      ,.enable_vanilla_core_pc_histogram_p(1)
+  `endif
+    // DR: If the instance name is changed, the bind statements in the
+    // file where this module is defined, and header strings in the
+    // profilers need to be changed as well.
+    ) testbench (
+      .clk_i(core_clk)
+      ,.reset_i(global_reset)
+
+      ,.dram_clk_i(dram_clk)
+
+      ,.io_link_sif_i(io_link_sif_li)
+      ,.io_link_sif_o(io_link_sif_lo)
+
+      ,.tag_done_o(tag_done_lo)
+    );
+  end
 
   // reset is deasserted when tag programming is done.
   logic reset_r;
